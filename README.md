@@ -34,13 +34,15 @@ The Gradle frontend build downloads its configured Node.js version. These are le
 The Compose stack starts the application at `http://localhost:8090`, MySQL on port `3306`, and Selenoid on port `4444`.
 
 1. Create a MySQL data directory containing `my.cnf` and a `datadir` directory. The MySQL configuration should enable the authentication mode required by your MySQL image.
-2. In `docker/`, create a `.env` file with absolute paths for the MySQL directory and the Docker configuration directory:
+2. In the repository root, create a `.env` file with absolute paths for the MySQL directory and the Docker configuration directory. Set a private JWT signing secret as well:
 
    ```dotenv
    MYSQL_FOLDER=/absolute/path/to/mysql
+   PWD=/absolute/path/to/automation-test/docker
+   JWT_SECRET=replace-with-output-of-openssl-rand-base64-64
    ```
 
-   `MYSQL_FOLDER` must contain `my.cnf` and `datadir`. Also set `PWD` in the `.env` file to the absolute path of the repository's `docker/` directory; Compose uses it to mount the Selenoid configuration.
+   Replace the `JWT_SECRET` placeholder with the output of `openssl rand -base64 64`; do not commit the generated secret. `MYSQL_FOLDER` must contain `my.cnf` and `datadir`. `PWD` is used to mount the Selenoid configuration.
 3. From the repository root, build the application image and start the services:
 
    ```bash
@@ -60,7 +62,7 @@ The application container reads its database connection from the `DATABASE_*` en
 
 ## Run the frontend separately
 
-Start the backend and a MySQL instance first. The backend defaults to `localhost:3306`, database `test`, username `root`, and an empty password; update `backend/src/main/resources/application.yml` if your local database differs.
+Start the backend and a MySQL instance first. The backend defaults to `localhost:3306`, database `test`, username `root`, and an empty password; update `backend/src/main/resources/application.yml` if your local database differs. Set the `JWT_SECRET` environment variable before starting the backend locally. Generate a strong value with `openssl rand -base64 64` and keep it private.
 
 Then start the React development server:
 
