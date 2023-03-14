@@ -11,7 +11,7 @@ spring:
   liquibase:
     change-log: classpath:liquibase-changelog.xml
 app:
-  jwtSecret: JWTSuperSecretKey
+  jwtSecret: ${JWT_SECRET}
   jwtExpirationInMs: 3600000
 server:
   port: 8090
@@ -31,7 +31,7 @@ spring:
   liquibase:
     change-log: classpath:liquibase-changelog.xml
 app:
-  jwtSecret: JWTSuperSecretKey
+  jwtSecret: ${JWT_SECRET}
   jwtExpirationInMs: 3600000
 server:
   port: 8090
