@@ -1,6 +1,7 @@
 package io.github.sskorol.playground.controller;
 
 import io.github.sskorol.playground.exception.ResourceNotFoundException;
+import io.github.sskorol.playground.exception.BadRequestException;
 import io.github.sskorol.playground.model.User;
 import io.github.sskorol.playground.payload.UserIdentityAvailability;
 import io.github.sskorol.playground.payload.UserProfile;
@@ -10,6 +11,7 @@ import io.github.sskorol.playground.security.CurrentUser;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -49,9 +51,12 @@ public class UserController {
     }
 
     @GetMapping("/users")
-    public List<UserSummary> getAllUsers(@RequestParam("limit") long limit) {
-        return userRepository.findAll().stream()
-            .limit(limit)
+    public List<UserSummary> getAllUsers(@RequestParam(value = "limit", defaultValue = "50") long limit) {
+        if (limit < 1 || limit > 100) {
+            throw new BadRequestException("The user limit must be between 1 and 100.");
+        }
+
+        return userRepository.findAll(PageRequest.of(0, (int) limit)).stream()
             .map(user -> new UserSummary(user.getId(), user.getName(), user.getAge(), user.getSalary(),
                 user.getUsername(), user.getEmail()))
             .collect(toList());
