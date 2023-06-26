@@ -21,7 +21,7 @@ import java.util.Set;
     @UniqueConstraint(columnNames = "username"),
     @UniqueConstraint(columnNames = "email")
 })
-@ToString(exclude = "roles")
+@ToString(exclude = {"roles", "password"})
 public class User implements UserDetails, Serializable {
 
     private static final long serialVersionUID = 7449222326401403686L;
