@@ -17,6 +17,7 @@ public class SignUpRequest {
 
     @NotBlank
     @Size(min = 4, max = 12)
+    @Pattern(regexp = "\\d+(\\.\\d+)?")
     private String salary;
 
     @NotBlank
