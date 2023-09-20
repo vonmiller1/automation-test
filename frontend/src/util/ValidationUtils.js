@@ -22,7 +22,7 @@ export function validateName(name) {
         };
     } else if (name.length > NAME_MAX_LENGTH) {
         return {
-            validationStatus: 'error',
+            validateStatus: 'error',
             errorMsg: `Name is too long (Maximum ${NAME_MAX_LENGTH} characters allowed.)`
         };
     }
@@ -41,12 +41,12 @@ export function validateAge(age) {
         };
     } else if (age.length > AGE_MAX_LENGTH) {
         return {
-            validationStatus: 'error',
+            validateStatus: 'error',
             errorMsg: `Age is too long (Maximum ${AGE_MAX_LENGTH} characters allowed.)`
         };
-    } else if (!_.isSafeInteger(age)) {
+    } else if (!/^\d+$/.test(age) || !_.isSafeInteger(Number(age))) {
         return {
-            validationStatus: 'error',
+            validateStatus: 'error',
             errorMsg: 'Age should be a number.'
         };
     }
@@ -65,12 +65,12 @@ export function validateSalary(salary) {
         };
     } else if (salary.length > SALARY_MAX_LENGTH) {
         return {
-            validationStatus: 'error',
+            validateStatus: 'error',
             errorMsg: `Salary is too long (Maximum ${SALARY_MAX_LENGTH} characters allowed.)`
         };
     } else if (!isDouble(salary)) {
         return {
-            validationStatus: 'error',
+            validateStatus: 'error',
             errorMsg: 'Salary should be decimal.'
         };
     }
@@ -82,7 +82,7 @@ export function validateSalary(salary) {
 }
 
 export function validateEmail(email) {
-    const EMAIL_REGEX = RegExp('[^@ ]+@[^@ ]+\\.[^@ ]+');
+    const EMAIL_REGEX = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
     if (!email) {
         return {
@@ -119,7 +119,7 @@ export function validateUsername(username) {
         };
     } else if (username.length > USERNAME_MAX_LENGTH) {
         return {
-            validationStatus: 'error',
+            validateStatus: 'error',
             errorMsg: `Username is too long (Maximum ${USERNAME_MAX_LENGTH} characters allowed.)`
         };
     }
@@ -138,7 +138,7 @@ export function validatePassword(password) {
         };
     } else if (password.length > PASSWORD_MAX_LENGTH) {
         return {
-            validationStatus: 'error',
+            validateStatus: 'error',
             errorMsg: `Password is too long (Maximum ${PASSWORD_MAX_LENGTH} characters allowed.)`
         };
     }
