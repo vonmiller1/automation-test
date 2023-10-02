@@ -1,4 +1,4 @@
 export function isDouble(val) {
-    const offset = Math.abs(Math.fround(val) - val);
-    return !isNaN(offset) && offset > 0;
+    const number = Number(val);
+    return !isNaN(number) && isFinite(number) && number % 1 !== 0;
 }
