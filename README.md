@@ -1,117 +1,104 @@
-# Test Automation Playground 
+# Test Automation Playground
 
-[![GitHub license](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://goo.gl/9GLmMZ)
-[![Twitter URL](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://twitter.com/intent/tweet?text=Check%20this%20awesome%20test%20automation%20playground:&url=https://github.com/sskorol/test-automation-playground)
+A sample web application and UI test suite for practicing browser-based test automation. The project includes a React frontend, a Spring Boot backend, and automated tests for the chart and grid interfaces. Some application defects are intentional and are part of the practice exercises.
 
-This repository was created to help Software Engineers in Test practicing skills in ReactJS apps automation.
-Apart from that, some of the modules were designed as a part of [QAFest 18](http://qafest.com) talk's preparation.  
- 
-There're 3 modules:
+## Project modules
 
- - frontend
- - backend
- - domain   
+| Module | Description |
+| --- | --- |
+| `frontend/` | React interface with login, signup, user profile, chart, and grid pages. |
+| `backend/` | Spring Boot REST API with JWT authentication, user management, and MySQL persistence. |
+| `domain/` | Selenide and TestNG page objects, browser configuration, assertions, and chart/grid UI tests. |
+| `docker/` | Docker Compose configuration for the application, MySQL, and Selenoid browser automation. |
 
-## Frontend
+## Technology
 
- Based on [ReactJS](https://github.com/facebook/create-react-app) and [MobX](https://mobx.js.org).
- 
- - Chart component is a customized version of [react-stock-charts](https://github.com/rrag/react-stockcharts).
- - Grid component is a customized version of [react-data-grid](https://github.com/adazzle/react-data-grid).
- - Common UI components are based on [Ant Design](https://ant.design), except [DatePicker](https://github.com/Hacker0x01/react-datepicker), which has been chosen for playing with events.
- - [ReactTestUtils](https://reactjs.org/docs/test-utils.html#simulate) was backdoored for demo purposes (events triggering). 
- - Common components have special **data-qa** attributes for easier locators lookup and maintenance.
+- **Frontend:** React, MobX, Ant Design, `react-data-grid`, and `react-stockcharts`
+- **Backend:** Java 8, Spring Boot, Spring Security, Liquibase, and MySQL
+- **UI testing:** Java 8, Selenide, TestNG, and Selenoid for remote browser sessions
+- **Build:** Gradle 4.8; the frontend build uses Node.js 10.5.0 and Yarn
 
- Note that Grid component contains several bugs, which were introduced for demo purposes. Try to detect and fix them. ;)
+## Requirements
 
- You can start frontend via the following command:
- 
- ```bash
- yarn start
- ```
- 
- Also note that Grid and Chart components could be used in a dynamic mode.
- To trigger data refreshing you have to activate the following options from within **./src/constants/index.js**:
- 
- ```js
- AUTOUPDATE_CHART=true
- AUTOUPDATE_GRID=true
- ```  
+Choose the tools required by the part of the project you want to run:
 
-## Backend
+- Java 8
+- Docker and Docker Compose for the containerized stack
+- Yarn for standalone frontend development
+- Chrome for local UI test execution
 
- Based on [Spring Boot](https://spring.io/projects/spring-boot) and [MySQL](https://hub.docker.com/r/mysql/mysql-server).
- It's recommended to persist container's DB to avoid loosing data on stopping.
- 
- [Liquibase](https://www.liquibase.org) is configured for schema / initial data preparation. By default it populates only roles.
- Users could be created via SignUp form.  
- 
- Backend may work in 2 modes: local / docker.
- For local development just import project as a Spring Boot application and create corresponding run configuration.
- Before starting up backend, you have to raise MySQL container:
- 
- ```bash
- docker run --name=mysql1 --mount type=bind,src=/path/to/shared/mysql/my.cnf,dst=/etc/my.cnf --mount type=bind,src=/path/to/shared/mysql/datadir,dst=/var/lib/mysql -e MYSQL_DATABASE=test -e MYSQL_ALLOW_EMPTY_PASSWORD=true -e MYSQL_ROOT_HOST=% -p 3306:3306 -d mysql/mysql-server
- ```
- 
- Note that **mount** is required for data persistence. Both **my.cnf** and **datadir** must exist before running above command.
- Config may look like the following:
- ```text
- [mysqld]
- user=root
- default_authentication_plugin=mysql_native_password
- block_encryption_mode=aes-256-cbc
- ```
- 
- Gradle build file has a special task for creating a docker image with both frontend and backend hosted within a single container.
- Just run the following command to prepare corresponding image:
- 
- ```bash
- ./gradlew clean buildDocker
- ```
- 
- To start all the containers together (including MySql and [Selenoid](https://github.com/aerokube/selenoid) use **./docker/docker-compose.yml**:
- 
- ```bash
- docker-compose up -d
- ```  
- 
- Please note that `docker-compose.yml` uses 2 environment variables: `MYSQL_FOLDER` and `PWD`.
- Former refers to your local MySQL folder for data persistence, and latter should provide an absolute path to `./docker`
- folder for Selenoid mappings. The easiest way to set them up is creating `.env` file in the `./docker` root.  
- 
- Similar to frontend side, be aware of the backend bug, which was introduced for demo purposes. Try to detect and fix it. ;)
+The Gradle frontend build downloads its configured Node.js version. These are legacy project dependencies; newer tool versions may require compatibility changes.
 
-## Domain
+## Run the application with Docker
 
- There're several tests created for Grid and Chart components. Some of them will fail due to application bugs.
- It's recommended to check QAFest 18 video recording first to get an overall idea of the introduced issues' nature,
- and how to fix them.
+The Compose stack starts the application at `http://localhost:8090`, MySQL on port `3306`, and Selenoid on port `4444`.
 
- Tests can be executed in 2 modes as well: local and docker.
+1. Create a MySQL data directory containing `my.cnf` and a `datadir` directory. The MySQL configuration should enable the authentication mode required by your MySQL image.
+2. In `docker/`, create a `.env` file with absolute paths for the MySQL directory and the Docker configuration directory:
 
- If you raised docker containers described in a backend section,
- use the following startup command:
- 
- ```bash
- ./gradlew clean test -Dsuite=remote -DappHost=react -DappPort=8090
- ```
+   ```dotenv
+   MYSQL_FOLDER=/absolute/path/to/mysql
+   ```
 
- For local execution use:
+   `MYSQL_FOLDER` must contain `my.cnf` and `datadir`. Also set `PWD` in the `.env` file to the absolute path of the repository's `docker/` directory; Compose uses it to mount the Selenoid configuration.
+3. From the repository root, build the application image and start the services:
 
- ```bash
- ./gradlew clean test -Dsuite=local -DappHost=localhost -DappPort=3000
- ```
+   ```bash
+   ./gradlew clean buildDocker
+   docker-compose -f docker/docker-compose.yml up -d
+   ```
 
- A code is based on [Selenide](https://selenide.org) framework. But there's also a custom 
- [webdriver-supplier](https://github.com/sskorol/webdriver-supplier) used for more flexible sessions / capabilities management.
+   On Windows, use `gradlew.bat` instead of `./gradlew`.
 
- Please read **webdriver-supplier** requirements first. But basically you'll need the following: 
+Stop the services with:
 
- - Browser SPI implementation (see **./src/test/resources/META-INF/services/io.github.sskorol.core.Browser** and
-  **./src/main/java/io/github/sskorol/browser**).
- - Parameterized suites and `wd.properties` (see **./src/test/resources**).
- 
- So depending on execution type, you have to choose between local and remote configuration.
+```bash
+docker-compose -f docker/docker-compose.yml down
+```
 
- That's it. My talk's video (RU) and presentation will be available on the official QAFest site. So stay tuned. ;) 
+The application container reads its database connection from the `DATABASE_*` environment variables defined in the Compose file. MySQL data is persisted in the host directory configured by `MYSQL_FOLDER`.
+
+## Run the frontend separately
+
+Start the backend and a MySQL instance first. The backend defaults to `localhost:3306`, database `test`, username `root`, and an empty password; update `backend/src/main/resources/application.yml` if your local database differs.
+
+Then start the React development server:
+
+```bash
+cd frontend
+yarn install
+yarn start
+```
+
+The frontend is served at `http://localhost:3000` and uses the API at `http://localhost:8090/api` by default.
+
+To build the frontend for production:
+
+```bash
+cd frontend
+yarn build
+```
+
+## Run the UI tests
+
+The `domain` module contains UI tests for the chart and grid pages. Start the application before running the tests.
+
+For local Chrome execution against a locally running frontend:
+
+```bash
+./gradlew -p domain clean test -Dsuite=local -DappHost=localhost -DappPort=3000
+```
+
+For remote browser execution using the Docker/Selenoid setup:
+
+```bash
+./gradlew -p domain clean test -Dsuite=remote -DappHost=react -DappPort=8090
+```
+
+On Windows, use `gradlew.bat` in place of `./gradlew`. The remote test configuration expects the browser and application to be reachable within the Docker network.
+
+## Practice exercises
+
+The chart and grid interfaces include behavior designed for automation practice, and the backend also contains an exercise. Explore the application and tests to identify the intended issues. Elements across the interface use `data-qa` attributes to support stable test locators.
+
+For chart or grid data that updates automatically, set `AUTOUPDATE_CHART` or `AUTOUPDATE_GRID` to `true` in `frontend/src/constants/index.js`.
