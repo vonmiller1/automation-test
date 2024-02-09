@@ -140,7 +140,7 @@ export class SignupStore {
 
     @action
     handleSubmit() {
-        if (this.isFormInvalid) {
+        if (this.isFormInvalid()) {
             this.setResponse(
                 500,
                 'Client App',
