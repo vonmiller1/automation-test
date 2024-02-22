@@ -15,9 +15,7 @@ const FormItem = Form.Item;
 @inject('routingStore', 'signupStore')
 @observer
 class Signup extends Component {
-    onChange = (date) => {
-        // eslint-disable-next-line no-console
-        console.log('Generated onChange event:', date.format('YYYY-MM-DD'));
+    onChange = date => {
         this.props.signupStore.setDate(date);
     };
 
