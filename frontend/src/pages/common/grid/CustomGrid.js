@@ -79,7 +79,13 @@ class GridComponent extends React.Component {
 
     componentDidMount() {
         if (AUTOUPDATE_GRID) {
-            setInterval(() => this.setRandomData(), GRID_UPDATE_INTERVAL);
+            this.updateInterval = setInterval(() => this.setRandomData(), GRID_UPDATE_INTERVAL);
+        }
+    }
+
+    componentWillUnmount() {
+        if (this.updateInterval) {
+            clearInterval(this.updateInterval);
         }
     }
 
