@@ -19,8 +19,13 @@ function parseData(parse) {
 }
 
 export function getData() {
-    return fetch('//rrag.github.io/react-stockcharts/data/MSFT.tsv')
-        .then(response => response.text())
+    return fetch('https://rrag.github.io/react-stockcharts/data/MSFT.tsv')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Unable to load chart data: ${response.status} ${response.statusText}`);
+            }
+            return response.text();
+        })
         .then(data => tsvParse(data, parseData(parseDate)));
 }
 
