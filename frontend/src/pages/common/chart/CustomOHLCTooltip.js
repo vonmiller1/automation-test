@@ -38,7 +38,7 @@ class CustomOHLCTooltip extends Component {
             high = ohlcFormat(item.high);
             low = ohlcFormat(item.low);
             close = ohlcFormat(item.close);
-            percent = percentFormat((item.close - item.open) / item.open);
+            percent = item.open === 0 ? displayTexts.na : percentFormat((item.close - item.open) / item.open);
         }
 
         const { origin: originProp } = this.props;
