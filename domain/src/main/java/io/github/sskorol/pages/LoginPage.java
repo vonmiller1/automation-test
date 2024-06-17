@@ -8,7 +8,7 @@ import static io.github.sskorol.util.PageFactory.at;
 
 public class LoginPage implements Page {
 
-    @Step("Login with {user.username} / {user.password}.")
+    @Step("Login with {user.username}.")
     public GridPage loginWith(final User user) {
         $("[data-qa=usernameOrEmail]").setValue(user.getUsername());
         $("[data-qa=password]").setValue(user.getPassword());
