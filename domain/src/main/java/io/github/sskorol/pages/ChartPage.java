@@ -25,11 +25,17 @@ public class ChartPage extends Menu {
 
     @Step("Scan chart and retrieve tooltips info.")
     public ChartPage scan() {
+        val movementStep = CONFIG.movementStep();
+        if (movementStep <= 0) {
+            throw new IllegalStateException("Chart movement step must be greater than zero.");
+        }
+        tooltipContentList.clear();
+
         val chart = $("rect.react-stockcharts-crosshair-cursor");
         val width = parseInt(chart.getAttribute("width"));
         val height = parseInt(chart.getAttribute("height")) / 2;
 
-        StreamEx.iterate(0, x -> x + CONFIG.movementStep())
+        StreamEx.iterate(0, x -> x + movementStep)
             .takeWhile(x -> x <= width)
             .forEach(x -> moveTo(chart, x, height).readTooltipContent());
 
