@@ -20,6 +20,6 @@ public class TooltipContent {
     }
 
     public boolean hasPositiveEODValue() {
-        return open - close >= 0.0;
+        return close > open;
     }
 }
