@@ -65,6 +65,7 @@ public class GridAssert extends AbstractAssert<GridAssert, GridPage> {
     }
 
     private <T> boolean hasBoundaries(final Column column, final T value) {
-        return actual.getRawColumnValues().get(column).contains(value);
+        val rawValues = actual.getRawColumnValues().get(column);
+        return rawValues != null && rawValues.contains(value);
     }
 }
